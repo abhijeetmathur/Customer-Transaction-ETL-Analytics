@@ -1,0 +1,50 @@
+-- Create Database
+CREATE DATABASE CUSTOMER_TRANSACTIONS_DB
+
+-- Create Table
+CREATE TABLE customer_transactions (
+    transaction_id SERIAL PRIMARY KEY,
+    customer_id INT,
+    name TEXT,
+    surname TEXT,
+    gender TEXT,
+    birthdate DATE,
+    transaction_amount DECIMAL(10,2),
+    transaction_date DATE,
+    merchant_name TEXT,
+    category TEXT
+);
+
+SELECT * FROM CUSTOMER_TRANSACTIONS
+
+-- Data Optimization - Add Indexing for Faster Queries
+CREATE INDEX idx_customer_id ON customer_transactions (customer_id);
+CREATE INDEX idx_transaction_date ON customer_transactions (transaction_date);
+
+
+--Extract KPIs & Business Insights
+
+-- Total Spending per Customer
+SELECT customer_id, name, SUM(transaction_amount) AS total_spent
+FROM customer_transactions
+GROUP BY customer_id, name
+ORDER BY total_spent DESC;
+
+-- Most Popular Purchase Categories
+SELECT category, COUNT(*) AS total_purchases
+FROM customer_transactions
+GROUP BY category
+ORDER BY total_purchases DESC;
+
+-- Top 5 Merchants by Total Sales
+SELECT merchant_name, SUM(transaction_amount) AS total_sales
+FROM customer_transactions
+GROUP BY merchant_name
+ORDER BY total_sales DESC
+LIMIT 5;
+
+-- Spending Trends Over Time
+SELECT DATE_TRUNC('month', transaction_date) AS month, COUNT(*) AS total_transactions
+FROM customer_transactions
+GROUP BY month
+ORDER BY month;
